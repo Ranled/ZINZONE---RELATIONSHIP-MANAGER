@@ -4,7 +4,7 @@ import { Heart, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Login() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -16,27 +16,21 @@ export default function Login() {
     setLoading(true);
     setError(null);
 
-    // Supabase requires an email, so we generate a fake one using the username
-    const fakeEmail = `${username.trim().toLowerCase()}@zinzone.app`;
-
     try {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
-          email: fakeEmail,
+          email,
           password,
-          options: {
-            data: { username: username.trim() }
-          }
         });
         if (error) throw error;
-        // Automatically sign in after sign up since we can't verify the fake email
+        // Automatically sign in after sign up since email confirmation is off
         await supabase.auth.signInWithPassword({
-          email: fakeEmail,
+          email,
           password,
         });
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email: fakeEmail,
+          email,
           password,
         });
         if (error) throw error;
@@ -52,8 +46,21 @@ export default function Login() {
     }
   };
 
-  const handleForgotPassword = () => {
-    alert("Since you are using a Username instead of a real Email, we cannot send you a password reset link automatically. Please contact support or create a new account.");
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      alert("Please enter your email address first.");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: window.location.origin + '/login',
+    });
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("Password reset instructions have been sent to your email!");
+    }
+    setLoading(false);
   };
 
   return (
@@ -84,13 +91,13 @@ export default function Login() {
 
         <form onSubmit={handleAuth} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-secondary mb-1 uppercase tracking-wider">Username</label>
+            <label className="block text-xs font-medium text-secondary mb-1 uppercase tracking-wider">Email</label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none input-glow transition-all"
-              placeholder="e.g. coolpartner99"
+              placeholder="you@example.com"
               required
             />
           </div>
