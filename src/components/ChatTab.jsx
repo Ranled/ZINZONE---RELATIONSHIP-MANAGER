@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Send } from 'lucide-react';
+import { Send, Video } from 'lucide-react';
 import { motion } from 'framer-motion';
+import VideoCallModal from './VideoCallModal';
 
 export default function ChatTab() {
   const { user, relationship } = useAuth();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -80,6 +82,17 @@ export default function ChatTab() {
 
   return (
     <div className="flex flex-col h-full bg-white backdrop-blur-sm rounded-2xl border border-gray-200 overflow-hidden shadow-xl">
+      {/* Header */}
+      <div className="p-3 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+        <h3 className="font-medium text-gray-800 px-2">Chat</h3>
+        <button
+          onClick={() => setIsVideoCallOpen(true)}
+          className="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl transition-colors flex items-center gap-2 text-sm font-medium"
+        >
+          <Video className="w-4 h-4" />
+        </button>
+      </div>
+
       {/* Messages List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
@@ -138,6 +151,12 @@ export default function ChatTab() {
           <Send className="w-5 h-5" />
         </button>
       </form>
+
+      <VideoCallModal 
+        isOpen={isVideoCallOpen} 
+        onClose={() => setIsVideoCallOpen(false)} 
+        relationshipId={relationship?.id}
+      />
     </div>
   );
 }
