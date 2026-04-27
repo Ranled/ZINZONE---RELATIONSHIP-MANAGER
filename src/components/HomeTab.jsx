@@ -30,11 +30,13 @@ export default function HomeTab() {
   const fetchPosts = async () => {
     const { data, error } = await supabase
       .from('memories')
-      .select('*, profiles(username)')
+      .select('*, profiles(username, avatar_url)')
       .eq('relationship_id', relationship.id)
       .order('created_at', { ascending: false });
     
-    if (!error && data) {
+    if (error) {
+      console.error("Fetch Posts Error:", error);
+    } else if (data) {
       setPosts(data);
     }
   };
@@ -159,8 +161,12 @@ export default function HomeTab() {
             >
               {/* Post Header */}
               <div className="p-4 flex items-center gap-3">
-                 <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold">
-                    {post.profiles?.username?.charAt(0).toUpperCase() || '?'}
+                 <div className="w-10 h-10 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center text-primary font-bold overflow-hidden">
+                    {post.profiles?.avatar_url ? (
+                      <img src={post.profiles.avatar_url} className="w-full h-full object-cover" alt="Avatar" />
+                    ) : (
+                      post.profiles?.username?.charAt(0).toUpperCase() || '?'
+                    )}
                   </div>
                   <div>
                     <p className="font-medium text-gray-800">@{post.profiles?.username || 'Unknown'}</p>
