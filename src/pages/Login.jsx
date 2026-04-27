@@ -96,7 +96,7 @@ export default function Login() {
           <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
             <Heart className="w-8 h-8 text-accent animate-pulse" fill="currentColor" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 text-glow tracking-tight">ZinZone</h1>
+          <h1 className="text-3xl font-bold text-gray-900 text-glow tracking-tight">Palangga</h1>
           <p className="text-secondary mt-2 text-center text-sm">Your private, shared space.</p>
         </div>
 

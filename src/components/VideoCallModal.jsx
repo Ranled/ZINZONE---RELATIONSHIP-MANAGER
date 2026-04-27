@@ -6,7 +6,7 @@ export default function VideoCallModal({ isOpen, onClose, relationshipId }) {
   if (!isOpen) return null;
 
   // Generate a unique, consistent room name based on the relationship ID
-  const roomName = `ZinZone-Room-${relationshipId?.replace(/-/g, '')}`;
+  const roomName = `Palangga-Room-${relationshipId?.replace(/-/g, '')}`;
   const meetUrl = `https://meet.jit.si/${roomName}`;
 
   return (
