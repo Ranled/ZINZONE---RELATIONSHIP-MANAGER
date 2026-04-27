@@ -78,7 +78,7 @@ export default function HomeTab() {
           user_id: user.id,
           title: 'Post',
           description: description.trim(),
-          image_url: finalImageUrl.trim() || null
+          image_url: finalImageUrl ? finalImageUrl.trim() : null
         }
       ]);
 
@@ -86,6 +86,11 @@ export default function HomeTab() {
       setDescription('');
       setImageUrl('');
       setImageFile(null);
+      // Fallback: manually fetch posts just in case realtime fails
+      fetchPosts();
+    } else {
+      console.error("Insert error:", error);
+      alert("Failed to post: " + error.message);
     }
     setLoading(false);
   };
