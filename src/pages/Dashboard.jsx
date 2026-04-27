@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { MessageCircle, Image as ImageIcon, Sparkles, LogOut, Home, Calendar, Award } from 'lucide-react';
+import { MessageCircle, Image as ImageIcon, Sparkles, LogOut, Home, Calendar, Award, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddContact from '../components/AddContact';
+import ProfileModal from '../components/ProfileModal';
 import HomeTab from '../components/HomeTab';
 import ChatTab from '../components/ChatTab';
 import PlansTab from '../components/PlansTab';
 import MilestonesTab from '../components/MilestonesTab';
 import ReflectionsTab from '../components/ReflectionsTab';
+import MapTab from '../components/MapTab';
 
 export default function Dashboard() {
-  const { signOut, relationship } = useAuth();
+  const { signOut, relationship, profile } = useAuth();
   const [activeTab, setActiveTab] = useState('home');
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const tabs = [
     { id: 'home', label: 'Home', icon: Home },
@@ -19,6 +22,7 @@ export default function Dashboard() {
     { id: 'plans', label: 'Plans', icon: Calendar },
     { id: 'milestones', label: 'Milestones', icon: Award },
     { id: 'reflections', label: 'Reflect', icon: Sparkles },
+    { id: 'map', label: 'Map', icon: MapPin },
   ];
 
   return (
@@ -33,14 +37,19 @@ export default function Dashboard() {
           <h1 className="text-xl font-bold text-gray-900 text-glow tracking-tight">ZinZone</h1>
           
           <button 
-            onClick={signOut}
-            className="p-2 text-secondary hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100"
-            title="Sign Out"
+            onClick={() => setIsProfileOpen(true)}
+            className="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden hover:scale-105 transition-transform"
           >
-            <LogOut className="w-5 h-5" />
+            {profile?.avatar_url ? (
+              <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              profile?.username?.charAt(0).toUpperCase() || '?'
+            )}
           </button>
         </div>
       </header>
+
+      <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-4xl w-full mx-auto p-0 md:p-4 z-10 flex flex-col h-[calc(100vh-8rem)] relative">
@@ -69,6 +78,10 @@ export default function Dashboard() {
             <motion.div key="reflections" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="flex-1 overflow-y-auto">
               <ReflectionsTab />
             </motion.div>
+          ) : activeTab === 'map' ? (
+            <motion.div key="map" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="flex-1 overflow-y-auto flex flex-col p-2 md:p-0">
+              <MapTab />
+            </motion.div>
           ) : null}
         </AnimatePresence>
       </main>
@@ -84,7 +97,7 @@ export default function Dashboard() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex flex-col items-center justify-center p-2 md:p-3 rounded-xl transition-all relative w-1/5 ${
+                  className={`flex flex-col items-center justify-center p-1 md:p-2 rounded-xl transition-all relative flex-1 ${
                     isActive ? 'text-primary' : 'text-secondary hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >

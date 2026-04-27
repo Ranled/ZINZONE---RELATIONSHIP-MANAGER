@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
       // Fetch Profile
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('*')
+        .select('username, avatar_url, latitude, longitude')
         .eq('id', userId)
         .single();
       

@@ -9,6 +9,7 @@ export default function HomeTab() {
   const [posts, setPosts] = useState([]);
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -38,10 +39,36 @@ export default function HomeTab() {
     }
   };
 
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const objectUrl = URL.createObjectURL(file);
+      setImageUrl(objectUrl);
+    }
+  };
+
   const handlePost = async (e) => {
     e.preventDefault();
-    if (!description.trim() && !imageUrl.trim()) return;
+    if (!description.trim() && !imageFile && !imageUrl.trim()) return;
     setLoading(true);
+
+    let finalImageUrl = imageUrl;
+
+    if (imageFile) {
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `posts/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('uploads')
+        .upload(filePath, imageFile);
+
+      if (!uploadError) {
+        const { data } = supabase.storage.from('uploads').getPublicUrl(filePath);
+        finalImageUrl = data.publicUrl;
+      }
+    }
 
     const { error } = await supabase
       .from('memories')
@@ -49,16 +76,16 @@ export default function HomeTab() {
         {
           relationship_id: relationship.id,
           user_id: user.id,
-          title: 'Post', // Default title since we removed it from UI to make it more like a status
+          title: 'Post',
           description: description.trim(),
-          image_url: imageUrl.trim() || null
+          image_url: finalImageUrl.trim() || null
         }
       ]);
 
     if (!error) {
       setDescription('');
       setImageUrl('');
-      // fetchPosts is called via realtime subscription
+      setImageFile(null);
     }
     setLoading(false);
   };
@@ -89,14 +116,16 @@ export default function HomeTab() {
 
           <div className="flex items-center justify-between pt-2 border-t border-gray-200">
             <div className="flex items-center gap-2 flex-1 mr-4">
-              <ImageIcon className="w-5 h-5 text-secondary/70" />
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="Paste image URL here..."
-                className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
-              />
+              <label className="cursor-pointer flex items-center gap-2 text-sm text-gray-500 hover:text-primary transition-colors">
+                <ImageIcon className="w-5 h-5" />
+                <span>Add Photo</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                />
+              </label>
             </div>
             <button
               type="submit"
