@@ -1,0 +1,163 @@
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+import { Image as ImageIcon, Send } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+export default function HomeTab() {
+  const { user, profile, relationship } = useAuth();
+  const [posts, setPosts] = useState([]);
+  const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!relationship) return;
+    fetchPosts();
+
+    const subscription = supabase
+      .channel('public:memories')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'memories', filter: `relationship_id=eq.${relationship.id}` }, (payload) => {
+        // Fetch posts again to get user profiles attached, or just optimistic append
+        fetchPosts();
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(subscription);
+  }, [relationship]);
+
+  const fetchPosts = async () => {
+    const { data, error } = await supabase
+      .from('memories')
+      .select('*, profiles(username)')
+      .eq('relationship_id', relationship.id)
+      .order('created_at', { ascending: false });
+    
+    if (!error && data) {
+      setPosts(data);
+    }
+  };
+
+  const handlePost = async (e) => {
+    e.preventDefault();
+    if (!description.trim() && !imageUrl.trim()) return;
+    setLoading(true);
+
+    const { error } = await supabase
+      .from('memories')
+      .insert([
+        {
+          relationship_id: relationship.id,
+          user_id: user.id,
+          title: 'Post', // Default title since we removed it from UI to make it more like a status
+          description: description.trim(),
+          image_url: imageUrl.trim() || null
+        }
+      ]);
+
+    if (!error) {
+      setDescription('');
+      setImageUrl('');
+      // fetchPosts is called via realtime subscription
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="space-y-6 pb-6">
+      {/* Create Post Area */}
+      <div className="glass-card p-4 mx-2">
+        <form onSubmit={handlePost} className="space-y-3">
+          <div className="flex gap-3">
+            <div className="w-10 h-10 bg-primary/20 rounded-full flex-shrink-0 flex items-center justify-center text-primary font-bold">
+              {profile?.username?.charAt(0).toUpperCase()}
+            </div>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Share a memory or update..."
+              className="w-full bg-transparent border-none text-white placeholder-white/40 focus:outline-none resize-none min-h-[40px] pt-2"
+              rows={2}
+            />
+          </div>
+          
+          {imageUrl && (
+            <div className="relative rounded-xl overflow-hidden mt-2 border border-white/10">
+              <img src={imageUrl} alt="Preview" className="w-full h-auto max-h-48 object-cover" onError={(e) => e.target.style.display = 'none'} />
+            </div>
+          )}
+
+          <div className="flex items-center justify-between pt-2 border-t border-white/10">
+            <div className="flex items-center gap-2 flex-1 mr-4">
+              <ImageIcon className="w-5 h-5 text-secondary/70" />
+              <input
+                type="url"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="Paste image URL here..."
+                className="flex-1 bg-transparent text-sm text-white placeholder-white/40 focus:outline-none"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading || (!description.trim() && !imageUrl.trim())}
+              className="bg-primary hover:bg-primary/90 text-white rounded-full p-2 transition-all disabled:opacity-50"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Feed */}
+      <div className="space-y-4 px-2">
+        {posts.length === 0 ? (
+          <div className="text-center py-12 text-secondary/60">
+            <p>No posts yet. Be the first to share something!</p>
+          </div>
+        ) : (
+          posts.map((post, index) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              key={post.id}
+              className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden"
+            >
+              {/* Post Header */}
+              <div className="p-4 flex items-center gap-3">
+                 <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold">
+                    {post.profiles?.username?.charAt(0).toUpperCase() || '?'}
+                  </div>
+                  <div>
+                    <p className="font-medium text-white/90">@{post.profiles?.username || 'Unknown'}</p>
+                    <p className="text-[10px] text-secondary/60 uppercase">
+                      {new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+              </div>
+
+              {/* Post Content */}
+              {post.description && (
+                <div className="px-4 pb-3">
+                  <p className="text-white/80 leading-relaxed text-sm whitespace-pre-wrap">{post.description}</p>
+                </div>
+              )}
+
+              {/* Post Image */}
+              {post.image_url && (
+                <div className="w-full bg-black/50 border-t border-white/5">
+                  <img
+                    src={post.image_url}
+                    alt="Post content"
+                    className="w-full h-auto max-h-96 object-contain"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                </div>
+              )}
+            </motion.div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}

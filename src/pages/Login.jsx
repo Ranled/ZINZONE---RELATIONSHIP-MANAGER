@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function Login() {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,11 +19,27 @@ export default function Login() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        if (!username.trim()) throw new Error("Username is required");
+        
+        const { data: authData, error } = await supabase.auth.signUp({
           email,
           password,
         });
         if (error) throw error;
+        
+        // Wait for session to be established if email confirmation is OFF
+        if (authData?.user) {
+          // Create profile
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([{ id: authData.user.id, username: username.trim() }]);
+            
+          if (profileError) {
+             console.error("Failed to create profile:", profileError);
+             // We won't block login if profile fails, but it shouldn't
+          }
+        }
+
         // Automatically sign in after sign up since email confirmation is off
         await supabase.auth.signInWithPassword({
           email,
@@ -90,6 +107,20 @@ export default function Login() {
         )}
 
         <form onSubmit={handleAuth} className="space-y-4">
+          {isSignUp && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+              <label className="block text-xs font-medium text-secondary mb-1 uppercase tracking-wider">Username</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none input-glow transition-all mb-4"
+                placeholder="Choose a unique username"
+                required={isSignUp}
+              />
+            </motion.div>
+          )}
+          
           <div>
             <label className="block text-xs font-medium text-secondary mb-1 uppercase tracking-wider">Email</label>
             <input

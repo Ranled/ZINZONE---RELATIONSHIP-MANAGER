@@ -5,6 +5,7 @@ const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [relationship, setRelationship] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -13,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchRelationship(session.user.id);
+        fetchRelationshipAndProfile(session.user.id);
       } else {
         setLoading(false);
       }
@@ -23,9 +24,10 @@ export const AuthProvider = ({ children }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchRelationship(session.user.id);
+        fetchRelationshipAndProfile(session.user.id);
       } else {
         setRelationship(null);
+        setProfile(null);
         setLoading(false);
       }
     });
@@ -33,21 +35,32 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchRelationship = async (userId) => {
+  const fetchRelationshipAndProfile = async (userId) => {
     try {
-      const { data, error } = await supabase
+      // Fetch Profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (profileData) setProfile(profileData);
+
+      // Fetch Relationship
+      const { data: relData, error } = await supabase
         .from('relationships')
         .select('*')
         .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
-        .single();
+        .limit(1)
+        .maybeSingle();
       
-      if (!error && data) {
-        setRelationship(data);
+      if (!error && relData) {
+        setRelationship(relData);
       } else {
         setRelationship(null);
       }
     } catch (error) {
-      console.error("Error fetching relationship:", error);
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
@@ -55,12 +68,13 @@ export const AuthProvider = ({ children }) => {
 
   const refreshRelationship = async () => {
     if (user) {
-      await fetchRelationship(user.id);
+      await fetchRelationshipAndProfile(user.id);
     }
   }
 
   const value = {
     user,
+    profile,
     relationship,
     loading,
     refreshRelationship,
