@@ -31,11 +31,13 @@ export default function ReflectionsTab() {
   const fetchReflections = async () => {
     const { data, error } = await supabase
       .from('reflections')
-      .select('*, users:user_id(email)')
+      .select('*, profiles(username)')
       .eq('relationship_id', relationship.id)
       .order('created_at', { ascending: false });
     
-    if (!error && data) {
+    if (error) {
+      console.error("Fetch Reflections Error:", error);
+    } else if (data) {
       setReflections(data);
     }
   };
