@@ -26,11 +26,15 @@ export default function Pairing() {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('username', searchUsername.trim().toLowerCase())
-        .single();
+        .ilike('username', searchUsername.trim())
+        .maybeSingle();
 
-      if (error || !data) {
-        throw new Error("User not found.");
+      if (error) {
+        console.error("Supabase error searching profile:", error);
+      }
+
+      if (!data) {
+        throw new Error("User not found. Make sure they have created an account with this exact username!");
       }
 
       setFoundUser(data);
