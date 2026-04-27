@@ -71,6 +71,7 @@ ALTER TABLE memories ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view memories in their relationship" ON memories FOR SELECT USING (EXISTS (SELECT 1 FROM relationships r WHERE r.id = memories.relationship_id AND (r.user1_id = auth.uid() OR r.user2_id = auth.uid())));
 CREATE POLICY "Users can insert memories in their relationship" ON memories FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM relationships r WHERE r.id = memories.relationship_id AND (r.user1_id = auth.uid() OR r.user2_id = auth.uid())) AND user_id = auth.uid());
+CREATE POLICY "Users can delete their own memories" ON memories FOR DELETE USING (user_id = auth.uid());
 
 -- 5. Reflections Table
 CREATE TABLE reflections (

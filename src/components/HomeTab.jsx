@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Image as ImageIcon, Send } from 'lucide-react';
+import { Image as ImageIcon, Send, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function HomeTab() {
@@ -88,13 +88,43 @@ export default function HomeTab() {
       setDescription('');
       setImageUrl('');
       setImageFile(null);
-      // Fallback: manually fetch posts just in case realtime fails
       fetchPosts();
     } else {
       console.error("Insert error:", error);
       alert("Failed to post: " + error.message);
     }
     setLoading(false);
+  };
+
+  const handleDeletePost = async (postId, imageUrl) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+
+    // Delete from database
+    const { error } = await supabase
+      .from('memories')
+      .delete()
+      .eq('id', postId);
+
+    if (error) {
+      console.error("Delete error:", error);
+      alert("Failed to delete post: " + error.message);
+    } else {
+      // Optimistically remove from UI
+      setPosts(current => current.filter(post => post.id !== postId));
+      
+      // Optionally delete image from storage if it exists and belongs to this post
+      if (imageUrl && imageUrl.includes('uploads/posts/')) {
+        try {
+          const urlParts = imageUrl.split('uploads/posts/');
+          if (urlParts.length > 1) {
+            const fileName = urlParts[1];
+            await supabase.storage.from('uploads').remove([`posts/${fileName}`]);
+          }
+        } catch (e) {
+          console.error("Failed to delete image from storage", e);
+        }
+      }
+    }
   };
 
   return (
@@ -160,20 +190,31 @@ export default function HomeTab() {
               className="bg-white border border-gray-200 rounded-2xl overflow-hidden"
             >
               {/* Post Header */}
-              <div className="p-4 flex items-center gap-3">
-                 <div className="w-10 h-10 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center text-primary font-bold overflow-hidden">
-                    {post.profiles?.avatar_url ? (
-                      <img src={post.profiles.avatar_url} className="w-full h-full object-cover" alt="Avatar" />
-                    ) : (
-                      post.profiles?.username?.charAt(0).toUpperCase() || '?'
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-800">@{post.profiles?.username || 'Unknown'}</p>
-                    <p className="text-[10px] text-secondary/60 uppercase">
-                      {new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
+              <div className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center text-primary font-bold overflow-hidden">
+                      {post.profiles?.avatar_url ? (
+                        <img src={post.profiles.avatar_url} className="w-full h-full object-cover" alt="Avatar" />
+                      ) : (
+                        post.profiles?.username?.charAt(0).toUpperCase() || '?'
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-800">@{post.profiles?.username || 'Unknown'}</p>
+                      <p className="text-[10px] text-secondary/60 uppercase">
+                        {new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                </div>
+                {post.user_id === user.id && (
+                  <button 
+                    onClick={() => handleDeletePost(post.id, post.image_url)}
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                    title="Delete post"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
 
               {/* Post Content */}
