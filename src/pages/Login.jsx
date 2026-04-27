@@ -4,7 +4,7 @@ import { Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
@@ -15,23 +15,37 @@ export default function Login() {
     setLoading(true);
     setError(null);
 
+    // Supabase requires an email, so we generate a fake one using the username
+    const fakeEmail = `${username.trim().toLowerCase()}@zinzone.app`;
+
     try {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
-          email,
+          email: fakeEmail,
           password,
+          options: {
+            data: { username: username.trim() }
+          }
         });
         if (error) throw error;
-        alert('Check your email for the login link!');
+        // Automatically sign in after sign up since we can't verify the fake email
+        await supabase.auth.signInWithPassword({
+          email: fakeEmail,
+          password,
+        });
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email,
+          email: fakeEmail,
           password,
         });
         if (error) throw error;
       }
     } catch (error) {
-      setError(error.message);
+      if (error.message.includes("Email not confirmed")) {
+        setError("Please turn OFF 'Confirm email' in your Supabase Auth settings to use usernames!");
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -65,13 +79,13 @@ export default function Login() {
 
         <form onSubmit={handleAuth} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-secondary mb-1 uppercase tracking-wider">Email</label>
+            <label className="block text-xs font-medium text-secondary mb-1 uppercase tracking-wider">Username</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none input-glow transition-all"
-              placeholder="you@example.com"
+              placeholder="e.g. coolpartner99"
               required
             />
           </div>
