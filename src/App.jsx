@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
-import Pairing from './pages/Pairing';
 import Dashboard from './pages/Dashboard';
 
 const ProtectedRoute = ({ children }) => {
@@ -11,15 +10,8 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-const PairedRoute = ({ children }) => {
-  const { user, relationship } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
-  if (!relationship) return <Navigate to="/pairing" replace />;
-  return children;
-};
-
 const AppRoutes = () => {
-  const { user, relationship } = useAuth();
+  const { user } = useAuth();
 
   return (
     <Routes>
@@ -27,7 +19,6 @@ const AppRoutes = () => {
         path="/" 
         element={
           !user ? <Navigate to="/login" replace /> :
-          !relationship ? <Navigate to="/pairing" replace /> :
           <Navigate to="/dashboard" replace />
         } 
       />
@@ -36,20 +27,17 @@ const AppRoutes = () => {
         element={user ? <Navigate to="/" replace /> : <Login />} 
       />
       <Route 
-        path="/pairing" 
+        path="/dashboard" 
         element={
           <ProtectedRoute>
-            {relationship ? <Navigate to="/dashboard" replace /> : <Pairing />}
+            <Dashboard />
           </ProtectedRoute>
         } 
       />
+      {/* Fallback to handle old /pairing URL */}
       <Route 
-        path="/dashboard" 
-        element={
-          <PairedRoute>
-            <Dashboard />
-          </PairedRoute>
-        } 
+        path="/pairing" 
+        element={<Navigate to="/dashboard" replace />} 
       />
     </Routes>
   );

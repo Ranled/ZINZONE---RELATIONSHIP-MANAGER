@@ -79,7 +79,7 @@ export default function ChatTab() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+    <div className="flex flex-col h-full bg-white backdrop-blur-sm rounded-2xl border border-gray-200 overflow-hidden shadow-xl">
       {/* Messages List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
@@ -99,8 +99,8 @@ export default function ChatTab() {
                 <div
                   className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-[15px] leading-relaxed shadow-sm ${
                     isMe
-                      ? 'bg-gradient-to-br from-primary to-primary/80 text-white rounded-br-sm'
-                      : 'bg-white/10 border border-white/5 text-white/90 rounded-bl-sm'
+                      ? 'bg-gradient-to-br from-primary to-primary/80 text-gray-900 rounded-br-sm'
+                      : 'bg-gray-50 border border-gray-100 text-gray-800 rounded-bl-sm'
                   }`}
                 >
                   {msg.content}
@@ -116,12 +116,12 @@ export default function ChatTab() {
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSendMessage} className="p-3 bg-white/5 border-t border-white/10 flex gap-2 items-end">
+      <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-gray-200 flex gap-2 items-end">
         <textarea
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-white/30 focus:outline-none input-glow resize-none min-h-[44px] max-h-[120px]"
+          className="flex-1 bg-white border border-gray-200 rounded-2xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none input-glow resize-none min-h-[44px] max-h-[120px]"
           rows={1}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {

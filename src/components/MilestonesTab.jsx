@@ -56,10 +56,10 @@ export default function MilestonesTab() {
   return (
     <div className="space-y-6 pb-6 pt-4">
       <div className="flex justify-between items-center px-4">
-        <h2 className="text-xl font-semibold text-white/90">Milestones</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Milestones</h2>
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="p-2 bg-white/5 hover:bg-white/10 text-white rounded-full transition-colors"
+          className="p-2 bg-white hover:bg-gray-50 text-gray-900 rounded-full transition-colors"
         >
           <Plus className={`w-5 h-5 transition-transform duration-300 ${isAdding ? 'rotate-45 text-accent' : ''}`} />
         </button>
@@ -79,23 +79,23 @@ export default function MilestonesTab() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. First Date, Anniversary..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none input-glow transition-all"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none input-glow transition-all"
                 required
               />
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2">
                 <CalendarHeart className="w-5 h-5 text-secondary/70" />
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="flex-1 bg-transparent text-white focus:outline-none min-h-[30px]"
+                  className="flex-1 bg-transparent text-gray-900 focus:outline-none min-h-[30px]"
                   required
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading || !title.trim() || !date}
-                className="w-full bg-gradient-to-r from-accent to-primary hover:opacity-90 text-white rounded-xl py-2.5 font-medium transition-all shadow-lg shadow-accent/20 disabled:opacity-50"
+                className="w-full bg-gradient-to-r from-accent to-primary hover:opacity-90 text-gray-900 rounded-xl py-2.5 font-medium transition-all shadow-lg shadow-accent/20 disabled:opacity-50"
               >
                 {loading ? 'Saving...' : 'Save Milestone'}
               </button>
@@ -107,7 +107,7 @@ export default function MilestonesTab() {
       <div className="px-4 relative">
         {/* Timeline line */}
         {milestones.length > 0 && (
-          <div className="absolute left-[31px] top-4 bottom-4 w-px bg-white/10"></div>
+          <div className="absolute left-[31px] top-4 bottom-4 w-px bg-gray-50"></div>
         )}
 
         <div className="space-y-6">
@@ -130,8 +130,8 @@ export default function MilestonesTab() {
                 >
                   <div className="w-4 h-4 rounded-full bg-accent relative z-10 shadow-[0_0_10px_rgba(244,114,182,0.8)] border-2 border-[#0F0F1A]"></div>
                   
-                  <div className="glass-card p-4 flex-1 hover:bg-white/10 transition-colors">
-                    <h3 className="text-lg font-medium text-white/90">{milestone.title}</h3>
+                  <div className="glass-card p-4 flex-1 hover:bg-gray-50 transition-colors">
+                    <h3 className="text-lg font-medium text-gray-800">{milestone.title}</h3>
                     <p className="text-sm text-secondary/80 mt-1">
                       {dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>

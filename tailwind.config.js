@@ -7,12 +7,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0F0F1A',
+        background: '#FAFAFA',
         primary: '#6D28D9',
-        secondary: '#C4B5FD',
-        accent: '#F472B6',
-        surface: 'rgba(255, 255, 255, 0.05)',
-        'surface-hover': 'rgba(255, 255, 255, 0.1)',
+        secondary: '#4B5563',
+        accent: '#9333EA',
+        surface: 'rgba(255, 255, 255, 0.9)',
+        'surface-hover': 'rgba(255, 255, 255, 1)',
       },
       fontFamily: {
         sans: ['Inter', 'Poppins', 'sans-serif'],

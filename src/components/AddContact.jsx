@@ -82,12 +82,12 @@ export default function Pairing() {
         <div className="glass-card p-8">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-white text-glow">Add Contact</h2>
+              <h2 className="text-2xl font-bold text-gray-900 text-glow">Add Contact</h2>
               {profile && (
-                <p className="text-sm text-secondary mt-1">Your username: <span className="font-semibold text-white">@{profile.username}</span></p>
+                <p className="text-sm text-secondary mt-1">Your username: <span className="font-semibold text-gray-900">@{profile.username}</span></p>
               )}
             </div>
-            <button onClick={signOut} className="text-secondary hover:text-white transition-colors" title="Sign Out">
+            <button onClick={signOut} className="text-secondary hover:text-gray-900 transition-colors" title="Sign Out">
               <LogOut className="w-5 h-5" />
             </button>
           </div>
@@ -107,7 +107,7 @@ export default function Pairing() {
                   value={searchUsername}
                   onChange={(e) => setSearchUsername(e.target.value)}
                   placeholder="Search username..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder-white/30 focus:outline-none input-glow transition-all"
+                  className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none input-glow transition-all"
                 />
               </div>
               <button
@@ -124,14 +124,14 @@ export default function Pairing() {
                 <motion.div 
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between mt-4 overflow-hidden"
+                  className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between mt-4 overflow-hidden"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold">
                       {foundUser.username.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-white font-medium">@{foundUser.username}</p>
+                      <p className="text-gray-900 font-medium">@{foundUser.username}</p>
                     </div>
                   </div>
                   <button

@@ -76,18 +76,18 @@ export default function HomeTab() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Share a memory or update..."
-              className="w-full bg-transparent border-none text-white placeholder-white/40 focus:outline-none resize-none min-h-[40px] pt-2"
+              className="w-full bg-transparent border-none text-gray-900 placeholder-gray-400 focus:outline-none resize-none min-h-[40px] pt-2"
               rows={2}
             />
           </div>
           
           {imageUrl && (
-            <div className="relative rounded-xl overflow-hidden mt-2 border border-white/10">
+            <div className="relative rounded-xl overflow-hidden mt-2 border border-gray-200">
               <img src={imageUrl} alt="Preview" className="w-full h-auto max-h-48 object-cover" onError={(e) => e.target.style.display = 'none'} />
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-2 border-t border-white/10">
+          <div className="flex items-center justify-between pt-2 border-t border-gray-200">
             <div className="flex items-center gap-2 flex-1 mr-4">
               <ImageIcon className="w-5 h-5 text-secondary/70" />
               <input
@@ -95,7 +95,7 @@ export default function HomeTab() {
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="Paste image URL here..."
-                className="flex-1 bg-transparent text-sm text-white placeholder-white/40 focus:outline-none"
+                className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
               />
             </div>
             <button
@@ -121,7 +121,7 @@ export default function HomeTab() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               key={post.id}
-              className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden"
+              className="bg-white border border-gray-200 rounded-2xl overflow-hidden"
             >
               {/* Post Header */}
               <div className="p-4 flex items-center gap-3">
@@ -129,7 +129,7 @@ export default function HomeTab() {
                     {post.profiles?.username?.charAt(0).toUpperCase() || '?'}
                   </div>
                   <div>
-                    <p className="font-medium text-white/90">@{post.profiles?.username || 'Unknown'}</p>
+                    <p className="font-medium text-gray-800">@{post.profiles?.username || 'Unknown'}</p>
                     <p className="text-[10px] text-secondary/60 uppercase">
                       {new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </p>
@@ -139,13 +139,13 @@ export default function HomeTab() {
               {/* Post Content */}
               {post.description && (
                 <div className="px-4 pb-3">
-                  <p className="text-white/80 leading-relaxed text-sm whitespace-pre-wrap">{post.description}</p>
+                  <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-wrap">{post.description}</p>
                 </div>
               )}
 
               {/* Post Image */}
               {post.image_url && (
-                <div className="w-full bg-black/50 border-t border-white/5">
+                <div className="w-full bg-gray-100 border-t border-gray-100">
                   <img
                     src={post.image_url}
                     alt="Post content"

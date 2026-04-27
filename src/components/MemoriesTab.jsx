@@ -59,10 +59,10 @@ export default function MemoriesTab() {
   return (
     <div className="space-y-6 pb-6">
       <div className="flex justify-between items-center px-2">
-        <h2 className="text-xl font-semibold text-white/90">Shared Memories</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Shared Memories</h2>
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="p-2 bg-white/5 hover:bg-white/10 text-white rounded-full transition-colors"
+          className="p-2 bg-white hover:bg-gray-50 text-gray-900 rounded-full transition-colors"
         >
           <Plus className={`w-5 h-5 transition-transform duration-300 ${isAdding ? 'rotate-45 text-accent' : ''}`} />
         </button>
@@ -82,23 +82,23 @@ export default function MemoriesTab() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Memory Title"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none input-glow transition-all"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none input-glow transition-all"
                 required
               />
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What made this special?"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none input-glow transition-all resize-none h-24"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none input-glow transition-all resize-none h-24"
               />
-              <div className="flex gap-2 items-center bg-white/5 border border-white/10 rounded-xl px-4 py-2 focus-within:border-primary/50 transition-all">
+              <div className="flex gap-2 items-center bg-white border border-gray-200 rounded-xl px-4 py-2 focus-within:border-primary/50 transition-all">
                 <ImageIcon className="w-5 h-5 text-secondary/70" />
                 <input
                   type="url"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
                   placeholder="Image URL (Optional)"
-                  className="flex-1 bg-transparent text-sm text-white placeholder-white/40 focus:outline-none py-1"
+                  className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none py-1"
                 />
               </div>
               <div className="flex justify-end pt-2">
@@ -128,10 +128,10 @@ export default function MemoriesTab() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
               key={memory.id}
-              className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-colors"
+              className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:bg-gray-50 transition-colors"
             >
               {memory.image_url && (
-                <div className="w-full h-48 bg-black/50 relative overflow-hidden group">
+                <div className="w-full h-48 bg-gray-100 relative overflow-hidden group">
                   <img
                     src={memory.image_url}
                     alt={memory.title}
@@ -144,14 +144,14 @@ export default function MemoriesTab() {
                 </div>
               )}
               <div className="p-5 relative">
-                <h3 className="text-lg font-semibold text-white/90 mb-1">{memory.title}</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-1">{memory.title}</h3>
                 <span className="text-[10px] uppercase tracking-wider text-secondary/60 mb-3 block">
                   {new Date(memory.created_at).toLocaleDateString(undefined, {
                     year: 'numeric', month: 'long', day: 'numeric'
                   })}
                 </span>
                 {memory.description && (
-                  <p className="text-white/70 text-sm leading-relaxed">
+                  <p className="text-gray-600 text-sm leading-relaxed">
                     {memory.description}
                   </p>
                 )}

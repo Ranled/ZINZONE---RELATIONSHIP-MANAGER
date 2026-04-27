@@ -82,7 +82,7 @@ export default function ReflectionsTab() {
           <div className="p-2 bg-primary/20 rounded-lg">
             <Sparkles className="w-6 h-6 text-accent" />
           </div>
-          <h2 className="text-xl font-medium text-white/90 leading-tight">
+          <h2 className="text-xl font-medium text-gray-800 leading-tight">
             {currentPrompt}
           </h2>
         </div>
@@ -93,7 +93,7 @@ export default function ReflectionsTab() {
               value={response}
               onChange={(e) => setResponse(e.target.value)}
               placeholder="Reflect on this..."
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/30 focus:outline-none input-glow transition-all resize-none h-32 text-lg font-light leading-relaxed"
+              className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 placeholder-gray-400 focus:outline-none input-glow transition-all resize-none h-32 text-lg font-light leading-relaxed"
             />
             {showSuccess && (
               <motion.div 
@@ -141,11 +141,11 @@ export default function ReflectionsTab() {
                   className={`p-5 rounded-2xl border ${
                     isMe 
                       ? 'bg-primary/10 border-primary/20 ml-8' 
-                      : 'bg-white/5 border-white/10 mr-8'
+                      : 'bg-white border-gray-200 mr-8'
                   }`}
                 >
                   <p className="text-xs text-secondary/70 mb-2 italic">"{ref.prompt}"</p>
-                  <p className="text-white/90 leading-relaxed font-light">{ref.response}</p>
+                  <p className="text-gray-800 leading-relaxed font-light">{ref.response}</p>
                   <div className={`mt-3 text-[10px] uppercase tracking-wider flex items-center gap-2 ${isMe ? 'text-primary/70' : 'text-secondary/60'}`}>
                     <span>{isMe ? 'You' : 'Partner'}</span>
                     <span>•</span>

@@ -73,7 +73,7 @@ export default function PlansTab() {
   return (
     <div className="space-y-6 pb-6 pt-4">
       <div className="flex justify-between items-center px-4">
-        <h2 className="text-xl font-semibold text-white/90">Our Plans</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Our Plans</h2>
         <button
           onClick={() => setIsAdding(!isAdding)}
           className="bg-primary/20 hover:bg-primary/30 text-primary rounded-full px-4 py-2 text-sm font-medium transition-colors flex items-center gap-2"
@@ -96,16 +96,16 @@ export default function PlansTab() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="What's the plan?"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none input-glow transition-all"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none input-glow transition-all"
                 required
               />
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2">
                 <Calendar className="w-5 h-5 text-secondary/70" />
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="flex-1 bg-transparent text-white focus:outline-none min-h-[30px]"
+                  className="flex-1 bg-transparent text-gray-900 focus:outline-none min-h-[30px]"
                   required
                 />
               </div>
@@ -145,7 +145,7 @@ export default function PlansTab() {
                     {isCompleted ? <Check className="w-6 h-6 text-green-400" /> : <Circle className="w-6 h-6 text-secondary" />}
                   </button>
                   <div>
-                    <h3 className={`text-white font-medium ${isCompleted ? 'line-through text-white/50' : ''}`}>{plan.title}</h3>
+                    <h3 className={`text-gray-900 font-medium ${isCompleted ? 'line-through text-gray-400' : ''}`}>{plan.title}</h3>
                     <p className="text-xs text-secondary/70 uppercase tracking-wider">{planDate}</p>
                   </div>
                 </div>
